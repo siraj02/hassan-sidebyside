@@ -40,12 +40,12 @@
   "email": "hello@sidebysideops.com",
   "areaServed": "Worldwide",
   "serviceType": ["SaaS Customer Support Outsourcing","Inbox Management","Social Media Management","Fractional Ops Support","AI Data Annotation","CRM Management"],
-  "priceRange": "$15–$1500/mo",
+  "priceRange": "$12–$1500/mo",
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
     "name": "Operations Support Plans",
     "itemListElement": [
-      {"@type":"Offer","name":"Pay by the Hour","price":"15","priceCurrency":"USD"},
+      {"@type":"Offer","name":"Pay by the Hour","price":"12","priceCurrency":"USD"},
       {"@type":"Offer","name":"Quarter Time","price":"497","priceCurrency":"USD"},
       {"@type":"Offer","name":"Half Time","price":"797","priceCurrency":"USD"},
       {"@type":"Offer","name":"Full Time","price":"1497","priceCurrency":"USD"}
@@ -315,7 +315,7 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 .saas-niche h2{font-size:clamp(1.7rem,3vw,2.4rem);font-weight:800;letter-spacing:-.03em;margin-bottom:16px}
 .saas-niche p{font-size:.925rem;color:var(--muted);line-height:1.8;margin-bottom:14px}
 .tools-pill-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
-.tools-pill{background:#fff;color:var(--text);font-size:.78rem;font-weight:600;padding:6px 14px;border-radius:100px;border:1px solid var(--border);transition:all .2s}
+.tools-pill{background:#fff;color:var(--text);font-size:.78rem;font-weight:600;padding:6px 14px;border-radius:100px;border:1px solid var(--border);transition:all .2s;display:inline-flex;align-items:center;gap:7px}
 .tools-pill:hover{border-color:var(--blue);color:var(--blue)}
 .stack-strip{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:52px 0}
 .stack-strip-inner{display:flex;flex-direction:column;align-items:center;text-align:center;gap:24px}
@@ -481,7 +481,9 @@ footer{background:var(--dark);padding:64px 0 0}
 .faq-q svg{flex-shrink:0;transition:transform .3s cubic-bezier(.16,1,.3,1);color:var(--blue)}
 .faq-item.open .faq-q svg{transform:rotate(45deg)}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.16,1,.3,1)}
-.faq-item.open .faq-a{max-height:400px}
+.blog-img-photo{padding:0;overflow:hidden}
+.blog-img-photo img{width:100%;height:100%;object-fit:cover;display:block}
+
 .faq-a-inner{padding:0 22px 22px;font-size:.875rem;color:var(--muted);line-height:1.8}
 
 /* ── CTA BAND ── */
@@ -561,8 +563,7 @@ footer{background:var(--dark);padding:64px 0 0}
       <a href="#contact">Contact</a>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
-      <a href="#contact" class="btn-pill-ghost" style="display:flex" id="navGhostBtn">Book a Call</a>
-      <a href="#pricing" class="btn-pill" id="navPillBtn">Get Started</a>
+      <a href="https://calendar.app.google/uCLC9z55LZyikS5Q9" target="_blank" rel="noopener" class="btn-pill" id="navPillBtn">Book a Call</a>
       <button class="ham" id="hamBtn" aria-label="Toggle navigation" aria-expanded="false" onclick="toggleMenu()">
         <span></span><span></span><span></span>
       </button>
@@ -577,8 +578,7 @@ footer{background:var(--dark);padding:64px 0 0}
   <a href="#about" onclick="closeMenu()">About</a>
   <a href="#blog" onclick="closeMenu()">Blog</a>
   <a href="#contact" onclick="closeMenu()">Contact</a>
-  <a href="https://calendar.app.google/uCLC9z55LZyikS5Q9" target="_blank" rel="noopener" class="btn-pill-ghost" onclick="closeMenu()">Book a Free Call</a>
-  <a href="#pricing" class="btn-pill" onclick="closeMenu()">Get Started</a>
+  <a href="https://calendar.app.google/uCLC9z55LZyikS5Q9" target="_blank" rel="noopener" class="btn-pill" onclick="closeMenu()">Book a Free Call</a>
 </div>
 
 <!-- ── SERVICE TICKER (blue ribbon) ── -->
@@ -816,20 +816,8 @@ footer{background:var(--dark);padding:64px 0 0}
         <div class="label">We Speak Your Stack</div>
         <p>We have hands-on experience across many of the tools modern businesses run on. If something is new to us, we get up to speed quickly, follow your SOPs closely, and make sure the work gets done right.</p>
       </div>
-      <div class="tools-pill-wrap">
-        <span class="tools-pill">GoHighLevel</span>
-        <span class="tools-pill">Flodesk</span>
-        <span class="tools-pill">Canva</span>
-        <span class="tools-pill">Stripe</span>
-        <span class="tools-pill">Asana</span>
-        <span class="tools-pill">HelpScout</span>
-        <span class="tools-pill">Retool</span>
-        <span class="tools-pill">RevenueCat</span>
-        <span class="tools-pill">Slack</span>
-        <span class="tools-pill">Notion</span>
-        <span class="tools-pill">Google Workspace</span>
-        <span class="tools-pill">Intercom</span>
-      </div>
+      <!-- Tools loaded from /logos/ folder. File naming: gohighlevel.svg, flodesk.svg, canva.svg, stripe.svg, asana.svg, helpscout.svg, retool.svg, revenuecat.svg, slack.svg, notion.svg, google-workspace.svg, intercom.svg -->
+      <div class="tools-pill-wrap" id="stackPills"></div>
     </div>
   </div>
 </section>
@@ -843,7 +831,7 @@ footer{background:var(--dark);padding:64px 0 0}
         <h2 id="problem-heading">Your Business Is Growing. Your Time Isn't.</h2>
         <p>You are capable and driven. But the daily pile of emails, content, admin, and support tasks keeps growing, and it is pulling you away from the work only you can do.</p>
         <blockquote class="problem-quote">
-          <p>"The highest-value thing you can do for your business is stop doing the things someone else can handle."</p>
+          <p>"Scale begins when you stop doing tasks that don't require you."</p>
           <cite>— Side By Side Ops</cite>
         </blockquote>
       </div>
@@ -1027,7 +1015,7 @@ footer{background:var(--dark);padding:64px 0 0}
       <div class="flex-grid">
         <div class="flex-card reveal d1">
           <h3>Pay by the Hour</h3>
-          <div class="flex-price">$15<sub>/hr</sub></div>
+          <div class="flex-price">Starting from $12<sub>/hr</sub></div>
           <p class="flex-note">Minimum 5 hours</p>
           <p>Best for one-off tasks, overflow support, or testing before committing to a plan.</p>
           <ul class="flist">
@@ -1252,8 +1240,8 @@ footer{background:var(--dark);padding:64px 0 0}
   </div>
 </section>
 
-<!-- Admin trigger -->
-<button class="admin-trigger" id="adminTrigger" title="Admin: Manage Blog" onclick="openAdmin()" aria-label="Open admin panel">
+<!-- Admin trigger - hidden from public, access via Ctrl+Shift+A -->
+<button class="admin-trigger" id="adminTrigger" title="Admin: Manage Blog" onclick="openAdmin()" aria-label="Open admin panel" style="display:none">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
 </button>
 
@@ -1276,6 +1264,7 @@ footer{background:var(--dark);padding:64px 0 0}
       <h3 id="editorTitle">Add New Post</h3>
       <div class="afg"><label>Category</label><select id="pCat"><option>Productivity</option><option>Tech</option><option>Operations</option><option>Leadership</option><option>Strategy</option></select></div>
       <div class="afg"><label>Title</label><input type="text" id="pTitle" placeholder="Post title"></div>
+      <div class="afg"><label>Image filename (optional — place PNG in root, e.g. blogimage1.png, blogimage2.png)</label><input type="text" id="pImg" placeholder="blogimage1.png"></div>
       <div class="afg"><label>Short Summary (shown on card)</label><input type="text" id="pSummary" placeholder="One or two sentences"></div>
       <div class="afg"><label>Full Article (blank lines = paragraphs, ### = headings)</label><textarea id="pBody" style="min-height:180px" placeholder="Write the full article..."></textarea></div>
       <div class="admin-btn-row">
@@ -1321,21 +1310,21 @@ footer{background:var(--dark);padding:64px 0 0}
   </div>
   <div class="rev-track-wrap">
     <div class="rev-track">
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"Our support queue went from chaos to completely under control within the first week. The bug reports coming to our dev team are now actually useful, saves us hours every sprint."</p><div class="rev-author"><div class="rev-avatar">JM</div><div><div class="rev-name">James M.</div><div class="rev-role">CTO, SaaS Startup</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"I was spending 2 hours a day on email. Now I open my inbox and everything that needs me is flagged. Everything else is handled. It genuinely changed how my mornings feel."</p><div class="rev-author"><div class="rev-avatar">SR</div><div><div class="rev-name">Sarah R.</div><div class="rev-role">Founder, E-commerce Brand</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"They built our weekly Stripe report from scratch, set up the Flodesk schedule, and had our drip campaigns running clean within days. Exactly what we needed."</p><div class="rev-author"><div class="rev-avatar">AK</div><div><div class="rev-name">Alex K.</div><div class="rev-role">Head of Operations, SaaS Platform</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"We tried three freelancers before this. None of them lasted more than a month. Side By Side Ops has been with us for over a year and they just get better over time."</p><div class="rev-author"><div class="rev-avatar">PL</div><div><div class="rev-name">Priya L.</div><div class="rev-role">CEO, Consulting Firm</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"The CRM was a mess. Three months of dirty data cleaned, leads re-tagged, and our sales team finally trusts the pipeline. That alone was worth every dollar."</p><div class="rev-author"><div class="rev-avatar">TD</div><div><div class="rev-name">Tom D.</div><div class="rev-role">Sales Director, B2B SaaS</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"GoHighLevel support was the main thing we needed. They knew the platform already, no learning curve, no explaining basics. Just jumped straight in and started handling tickets."</p><div class="rev-author"><div class="rev-avatar">MC</div><div><div class="rev-name">Marcus C.</div><div class="rev-role">Founder, Digital Agency</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"Platform health checks every morning, email campaigns running on time, subscriber churn flagged early. This is exactly what a reliable ops partner looks like."</p><div class="rev-author"><div class="rev-avatar">NW</div><div><div class="rev-name">Nina W.</div><div class="rev-role">COO, Subscription Platform</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"Honestly didn't know how much the support queue was stressing me out until it wasn't my problem anymore. First week felt weird. Second week felt amazing."</p><div class="rev-author"><div class="rev-avatar">JM</div><div><div class="rev-name">James M.</div><div class="rev-role">CTO, SaaS Startup</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"I kept putting off getting help because I thought onboarding someone would take longer than just doing it myself. It took two days. I haven't touched my inbox in three weeks."</p><div class="rev-author"><div class="rev-avatar">SR</div><div><div class="rev-name">Sarah R.</div><div class="rev-role">Founder, E-commerce Brand</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"They set up the Flodesk sequences I had been putting off for four months. Done in the first week. I'd been 'too busy' — turns out I just needed someone else to do it."</p><div class="rev-author"><div class="rev-avatar">AK</div><div><div class="rev-name">Alex K.</div><div class="rev-role">Head of Operations, SaaS Platform</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"We've had VAs before who needed constant hand-holding. This is different. I give context once and they run with it. Actually saves time rather than creating more work."</p><div class="rev-author"><div class="rev-avatar">PL</div><div><div class="rev-name">Priya L.</div><div class="rev-role">CEO, Consulting Firm</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"The CRM cleanup was the thing I kept dreading most. Three months of messy data, duplicate contacts, wrong tags. They sorted it quietly over a couple of weeks. Big relief."</p><div class="rev-author"><div class="rev-avatar">TD</div><div><div class="rev-name">Tom D.</div><div class="rev-role">Sales Director, B2B SaaS</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"GoHighLevel is not a simple platform and I didn't want to spend time teaching someone from scratch. They already knew it. Jumped in, started clearing tickets, no drama."</p><div class="rev-author"><div class="rev-avatar">MC</div><div><div class="rev-name">Marcus C.</div><div class="rev-role">Founder, Digital Agency</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"Small thing but it means a lot — they flag things before I ask. If something looks off in the platform or a subscriber count drops unexpectedly, I hear about it. That proactiveness is rare."</p><div class="rev-author"><div class="rev-avatar">NW</div><div><div class="rev-name">Nina W.</div><div class="rev-role">COO, Subscription Platform</div></div></div></div>
       <!-- Duplicate for loop -->
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"Our support queue went from chaos to completely under control within the first week. The bug reports coming to our dev team are now actually useful, saves us hours every sprint."</p><div class="rev-author"><div class="rev-avatar">JM</div><div><div class="rev-name">James M.</div><div class="rev-role">CTO, SaaS Startup</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"I was spending 2 hours a day on email. Now I open my inbox and everything that needs me is flagged. Everything else is handled. It genuinely changed how my mornings feel."</p><div class="rev-author"><div class="rev-avatar">SR</div><div><div class="rev-name">Sarah R.</div><div class="rev-role">Founder, E-commerce Brand</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"They built our weekly Stripe report from scratch, set up the Flodesk schedule, and had our drip campaigns running clean within days. Exactly what we needed."</p><div class="rev-author"><div class="rev-avatar">AK</div><div><div class="rev-name">Alex K.</div><div class="rev-role">Head of Operations, SaaS Platform</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"We tried three freelancers before this. None of them lasted more than a month. Side By Side Ops has been with us for over a year and they just get better over time."</p><div class="rev-author"><div class="rev-avatar">PL</div><div><div class="rev-name">Priya L.</div><div class="rev-role">CEO, Consulting Firm</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"The CRM was a mess. Three months of dirty data cleaned, leads re-tagged, and our sales team finally trusts the pipeline. That alone was worth every dollar."</p><div class="rev-author"><div class="rev-avatar">TD</div><div><div class="rev-name">Tom D.</div><div class="rev-role">Sales Director, B2B SaaS</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"GoHighLevel support was the main thing we needed. They knew the platform already, no learning curve, no explaining basics. Just jumped straight in and started handling tickets."</p><div class="rev-author"><div class="rev-avatar">MC</div><div><div class="rev-name">Marcus C.</div><div class="rev-role">Founder, Digital Agency</div></div></div></div>
-      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"Platform health checks every morning, email campaigns running on time, subscriber churn flagged early. This is exactly what a reliable ops partner looks like."</p><div class="rev-author"><div class="rev-avatar">NW</div><div><div class="rev-name">Nina W.</div><div class="rev-role">COO, Subscription Platform</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"Honestly didn't know how much the support queue was stressing me out until it wasn't my problem anymore. First week felt weird. Second week felt amazing."</p><div class="rev-author"><div class="rev-avatar">JM</div><div><div class="rev-name">James M.</div><div class="rev-role">CTO, SaaS Startup</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"I kept putting off getting help because I thought onboarding someone would take longer than just doing it myself. It took two days. I haven't touched my inbox in three weeks."</p><div class="rev-author"><div class="rev-avatar">SR</div><div><div class="rev-name">Sarah R.</div><div class="rev-role">Founder, E-commerce Brand</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"They set up the Flodesk sequences I had been putting off for four months. Done in the first week. I'd been 'too busy' — turns out I just needed someone else to do it."</p><div class="rev-author"><div class="rev-avatar">AK</div><div><div class="rev-name">Alex K.</div><div class="rev-role">Head of Operations, SaaS Platform</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"We've had VAs before who needed constant hand-holding. This is different. I give context once and they run with it. Actually saves time rather than creating more work."</p><div class="rev-author"><div class="rev-avatar">PL</div><div><div class="rev-name">Priya L.</div><div class="rev-role">CEO, Consulting Firm</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"The CRM cleanup was the thing I kept dreading most. Three months of messy data, duplicate contacts, wrong tags. They sorted it quietly over a couple of weeks. Big relief."</p><div class="rev-author"><div class="rev-avatar">TD</div><div><div class="rev-name">Tom D.</div><div class="rev-role">Sales Director, B2B SaaS</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"GoHighLevel is not a simple platform and I didn't want to spend time teaching someone from scratch. They already knew it. Jumped in, started clearing tickets, no drama."</p><div class="rev-author"><div class="rev-avatar">MC</div><div><div class="rev-name">Marcus C.</div><div class="rev-role">Founder, Digital Agency</div></div></div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">"Small thing but it means a lot — they flag things before I ask. If something looks off in the platform or a subscriber count drops unexpectedly, I hear about it. That proactiveness is rare."</p><div class="rev-author"><div class="rev-avatar">NW</div><div><div class="rev-name">Nina W.</div><div class="rev-role">COO, Subscription Platform</div></div></div></div>
     </div>
   </div>
 </section>
@@ -1537,30 +1526,49 @@ footer{background:var(--dark);padding:64px 0 0}
 <script>
 /* service ticker is pure CSS, no JS needed */
 
-/* ── LOGO CAROUSEL ── */
+/* ── LOGO CAROUSEL & STACK PILLS ── */
+/* Logo filenames map to /logos/[file].svg — add/remove entries here to change which logos appear */
 (function(){
-  var logos=[
-    {name:'Apex',style:'font-family:Sora,sans-serif;font-weight:800;font-size:1.1rem;color:#8FA3BF;letter-spacing:-.02em'},
-    {name:'Lucent',style:'font-family:Sora,sans-serif;font-weight:700;font-size:1rem;color:#8FA3BF;letter-spacing:.04em;text-transform:uppercase'},
-    {name:'Sovereign',style:'font-family:Sora,sans-serif;font-weight:600;font-size:.95rem;color:#8FA3BF;letter-spacing:.02em'},
-    {name:'METRA',style:'font-family:Sora,sans-serif;font-weight:800;font-size:1rem;color:#8FA3BF;letter-spacing:.12em'},
-    {name:'NovaTech',style:'font-family:Sora,sans-serif;font-weight:700;font-size:1rem;color:#8FA3BF;letter-spacing:-.01em'},
-    {name:'Axiom',style:'font-family:Sora,sans-serif;font-weight:800;font-size:1.05rem;color:#8FA3BF;letter-spacing:.05em;text-transform:uppercase'},
-    {name:'CloudPath',style:'font-family:DM Sans,sans-serif;font-weight:700;font-size:.95rem;color:#8FA3BF'},
-    {name:'Streamline',style:'font-family:Sora,sans-serif;font-weight:600;font-size:.9rem;color:#8FA3BF;letter-spacing:.01em'},
-    {name:'PivotHQ',style:'font-family:Sora,sans-serif;font-weight:700;font-size:.95rem;color:#8FA3BF'},
-    {name:'ClearStack',style:'font-family:DM Sans,sans-serif;font-weight:700;font-size:.9rem;color:#8FA3BF;letter-spacing:.02em'},
-    {name:'Vantage',style:'font-family:Sora,sans-serif;font-weight:600;font-size:1rem;color:#8FA3BF;letter-spacing:.03em'}
+  var tools=[
+    {name:'GoHighLevel', file:'gohighlevel'},
+    {name:'Flodesk',     file:'flodesk'},
+    {name:'Canva',       file:'canva'},
+    {name:'Stripe',      file:'stripe'},
+    {name:'Asana',       file:'asana'},
+    {name:'HelpScout',   file:'helpscout'},
+    {name:'Retool',      file:'retool'},
+    {name:'RevenueCat',  file:'revenuecat'},
+    {name:'Slack',       file:'slack'},
+    {name:'Notion',      file:'notion'},
+    {name:'Google Workspace', file:'google-workspace'},
+    {name:'Intercom',    file:'intercom'}
   ];
+
+  /* Hero logo carousel */
   var track=document.getElementById('logoTrack');
-  var html='';
-  [logos,logos].forEach(function(set){
-    set.forEach(function(l){
-      html+='<div class="logo-item"><span style="'+l.style+'">'+l.name+'</span></div>';
+  if(track){
+    var html='';
+    [tools,tools].forEach(function(set){
+      set.forEach(function(t){
+        html+='<div class="logo-item"><span style="display:inline-flex;align-items:center;gap:8px;font-family:\'Sora\',sans-serif;font-weight:600;font-size:.82rem;color:#8FA3BF"><img src="/logos/'+t.file+'.svg" alt="'+t.name+'" width="20" height="20" style="display:block;flex-shrink:0" onerror="this.style.display=\'none\'">'+t.name+'</span></div>';
+      });
     });
-  });
-  track.innerHTML=html;
+    track.innerHTML=html;
+  }
+
+  /* We Speak Your Stack pills */
+  var pills=document.getElementById('stackPills');
+  if(pills){
+    pills.innerHTML=tools.map(function(t){
+      return '<span class="tools-pill"><img src="/logos/'+t.file+'.svg" alt="" width="18" height="18" style="display:block;flex-shrink:0" onerror="this.style.display=\'none\'">'+t.name+'</span>';
+    }).join('');
+  }
 })();
+
+/* Admin keyboard shortcut */
+document.addEventListener('keydown',function(e){
+  if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();openAdmin();}
+});
 
 /* ── NAV SCROLL ── */
 var lastY=0;
@@ -1603,13 +1611,22 @@ document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(function
 
 /* ── BLOG ── */
 var BKEY='sbso_posts';
-var ADMIN_HASH='c2Jzbzc2Njc=';
 var MAX_ATTEMPTS=5;
 var LOCKOUT_MS=900000;
 var editId=null;
 var adminOk=false;
+var _AHASH=null; /* loaded at runtime from admin-config.json — never stored in this file */
 
-function checkAdminPw(input){
+/* Fetch the hash once when admin panel is opened */
+function loadAdminHash(cb){
+  if(_AHASH){cb(_AHASH);return;}
+  fetch('/admin-config.json?_='+Date.now())
+    .then(function(r){return r.ok?r.json():Promise.reject('not found');})
+    .then(function(d){_AHASH=d.h||'';cb(_AHASH);})
+    .catch(function(){cb('');});
+}
+
+function checkAdminPw(input,cb){
   var lockKey='sbso_lock';
   var stored=sessionStorage.getItem(lockKey);
   var lock=stored?JSON.parse(stored):{attempts:0,until:0};
@@ -1617,24 +1634,25 @@ function checkAdminPw(input){
     var mins=Math.ceil((lock.until-Date.now())/60000);
     document.getElementById('adminErr').textContent='Too many attempts. Try again in '+mins+' minute'+(mins>1?'s':'')+'.';
     document.getElementById('adminErr').style.display='block';
-    return false;
+    cb(false);return;
   }
-  if(btoa(encodeURIComponent(input))===ADMIN_HASH){
-    sessionStorage.setItem(lockKey,JSON.stringify({attempts:0,until:0}));
-    return true;
-  }
-  lock.attempts=(lock.attempts||0)+1;
-  if(lock.attempts>=MAX_ATTEMPTS){
-    lock.until=Date.now()+LOCKOUT_MS;
-    lock.attempts=0;
-    document.getElementById('adminErr').textContent='Too many failed attempts. Locked for 15 minutes.';
-  }else{
-    var left=MAX_ATTEMPTS-lock.attempts;
-    document.getElementById('adminErr').textContent='Incorrect password. '+left+' attempt'+(left>1?'s':'')+' remaining.';
-  }
-  document.getElementById('adminErr').style.display='block';
-  sessionStorage.setItem(lockKey,JSON.stringify(lock));
-  return false;
+  loadAdminHash(function(hash){
+    if(hash&&btoa(encodeURIComponent(input))===hash){
+      sessionStorage.setItem(lockKey,JSON.stringify({attempts:0,until:0}));
+      cb(true);return;
+    }
+    lock.attempts=(lock.attempts||0)+1;
+    if(lock.attempts>=MAX_ATTEMPTS){
+      lock.until=Date.now()+LOCKOUT_MS;lock.attempts=0;
+      document.getElementById('adminErr').textContent='Too many failed attempts. Locked for 15 minutes.';
+    }else{
+      var left=MAX_ATTEMPTS-lock.attempts;
+      document.getElementById('adminErr').textContent='Incorrect password. '+left+' attempt'+(left>1?'s':'')+' remaining.';
+    }
+    document.getElementById('adminErr').style.display='block';
+    sessionStorage.setItem(lockKey,JSON.stringify(lock));
+    cb(false);
+  });
 }
 
 var defaultPosts=[
@@ -1660,7 +1678,13 @@ function renderBlog(){
     return;
   }
   g.innerHTML=posts.map(function(p,i){
-    return '<div class="blog-card" onclick="openPost(\''+p.id+'\')"><div class="blog-img">'+blogEmoji[i%blogEmoji.length]+'</div><div class="blog-body"><p class="blog-cat">'+p.cat+'</p><h3>'+p.title+'</h3><p>'+p.summary+'</p><span class="btn-ghost">Read more <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div></div>';
+    var imgHtml;
+    if(p.img){
+      imgHtml='<div class="blog-img blog-img-photo"><img src="'+p.img+'" alt="'+p.title+'" loading="lazy" onerror="this.parentNode.innerHTML=\''+blogEmoji[i%blogEmoji.length]+'\'"></div>';
+    }else{
+      imgHtml='<div class="blog-img">'+blogEmoji[i%blogEmoji.length]+'</div>';
+    }
+    return '<div class="blog-card" onclick="openPost(\''+p.id+'\')">'+imgHtml+'<div class="blog-body"><p class="blog-cat">'+p.cat+'</p><h3>'+p.title+'</h3><p>'+p.summary+'</p><span class="btn-ghost">Read more <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div></div>';
   }).join('');
 }
 
@@ -1707,12 +1731,14 @@ function closeAdmin(){document.getElementById('adminPanel').classList.remove('op
 function closeAdminOut(e){if(e.target===document.getElementById('adminPanel'))closeAdmin();}
 function checkPw(){
   var val=document.getElementById('adminPw').value;
-  if(checkAdminPw(val)){
-    adminOk=true;
-    document.getElementById('adminLogin').style.display='none';
-    document.getElementById('adminEditor').style.display='block';
-    renderAdminList();
-  }
+  checkAdminPw(val,function(ok){
+    if(ok){
+      adminOk=true;
+      document.getElementById('adminLogin').style.display='none';
+      document.getElementById('adminEditor').style.display='block';
+      renderAdminList();
+    }
+  });
 }
 function renderAdminList(){
   var posts=loadPosts();
@@ -1729,11 +1755,12 @@ function savePost(){
   var summary=document.getElementById('pSummary').value.trim();
   var body=document.getElementById('pBody').value.trim();
   var cat=document.getElementById('pCat').value;
+  var img=document.getElementById('pImg').value.trim();
   if(!title||!summary||!body){var m=document.getElementById('saveMsg');m.textContent='Please fill in all fields.';m.style.color='#CC2200';m.style.display='block';return;}
   if(editId){
-    posts=posts.map(function(p){return p.id===editId?{id:p.id,cat:cat,title:title,summary:summary,body:body,date:p.date}:p});
+    posts=posts.map(function(p){return p.id===editId?{id:p.id,cat:cat,title:title,summary:summary,body:body,date:p.date,img:img||p.img||''}:p});
   }else{
-    posts.push({id:'p'+(Date.now()),cat:cat,title:title,summary:summary,body:body,date:'May 2026'});
+    posts.push({id:'p'+(Date.now()),cat:cat,title:title,summary:summary,body:body,date:'May 2026',img:img});
   }
   savePosts(posts);renderBlog();resetEditor();
   var m=document.getElementById('saveMsg');m.textContent=editId?'Post updated.':'Post published.';m.style.color='#00875A';m.style.display='block';
@@ -1748,6 +1775,7 @@ function editPost(id){
   document.getElementById('editorTitle').textContent='Edit Post';
   document.getElementById('pCat').value=p.cat;
   document.getElementById('pTitle').value=p.title;
+  document.getElementById('pImg').value=p.img||'';
   document.getElementById('pSummary').value=p.summary;
   document.getElementById('pBody').value=p.body;
 }
@@ -1759,7 +1787,7 @@ function deletePost(id){
 function resetEditor(){
   editId=null;
   document.getElementById('editorTitle').textContent='Add New Post';
-  ['pTitle','pSummary','pBody'].forEach(function(id){document.getElementById(id).value='';});
+  ['pTitle','pSummary','pBody','pImg'].forEach(function(id){document.getElementById(id).value='';});
 }
 
 /* ── CONTACT FORM ── */
