@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L4SCYEJSZ3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-L4SCYEJSZ3');
+</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230057FF'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='13' fill='white'%3ESB%3C/text%3E%3C/svg%3E">
 
 <!-- ── SEO ── -->
@@ -1840,22 +1849,54 @@ function handleForm(e){
   var btn=document.getElementById('formBtn');
   var st=document.getElementById('fstatus');
   var hp=document.getElementById('fwebsite');
-  if(hp&&hp.value){return;}
+  if(hp&&hp.value){return;} /* honeypot */
+
   var name=document.getElementById('fname').value.trim();
   var email=document.getElementById('femail').value.trim();
   if(!name||!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
     st.className='fstatus err';
     st.textContent='Please fill in your name and a valid email address.';
+    st.style.display='block';
     return;
   }
+
   btn.disabled=true;
   btn.textContent='Sending...';
-  setTimeout(function(){
-    st.className='fstatus ok';
-    st.textContent='Message sent! We will be in touch within 24 hours.';
-    btn.textContent='Message Sent';
-    document.getElementById('contactForm').reset();
-  },900);
+  st.className='';st.style.display='none';
+
+  var payload={
+    name:    name,
+    email:   email,
+    billing: document.getElementById('fbilling').value,
+    service: document.getElementById('fservice').value,
+    message: document.getElementById('fmsg').value.trim()
+  };
+
+  fetch('https://formtorch.com/f/1ityh5g0a7',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify(payload)
+  })
+  .then(function(r){
+    if(r.ok){
+      st.className='fstatus ok';
+      st.textContent='Message sent! We will be in touch within 24 hours.';
+      st.style.display='block';
+      btn.textContent='Message Sent';
+      document.getElementById('contactForm').reset();
+      /* GA conversion event */
+      if(typeof gtag!=='undefined'){gtag('event','form_submit',{event_category:'contact',event_label:'Contact Form'});}
+    }else{
+      throw new Error('bad response');
+    }
+  })
+  .catch(function(){
+    st.className='fstatus err';
+    st.textContent='Something went wrong. Please email us directly at hello@sidebysideops.com';
+    st.style.display='block';
+    btn.disabled=false;
+    btn.textContent='Send My Message';
+  });
 }
 
 /* ── INIT ── */
