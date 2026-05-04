@@ -664,7 +664,7 @@ footer{background:var(--dark);padding:64px 0 0}
           <a href="#services" class="btn-outline">See What We Handle</a>
         </div>
         <div class="trust-bar">
-          <p class="trust-label">Trusted by businesses worldwide</p>
+          <p class="trust-label">Tools We Work With Every Day</p>
           <div class="logo-carousel-wrap" aria-label="Client logos">
             <div class="logo-track" id="logoTrack"></div>
           </div>
@@ -1615,16 +1615,6 @@ var MAX_ATTEMPTS=5;
 var LOCKOUT_MS=900000;
 var editId=null;
 var adminOk=false;
-var _AHASH=null; /* loaded at runtime from admin-config.json — never stored in this file */
-
-/* Fetch the hash once when admin panel is opened */
-function loadAdminHash(cb){
-  if(_AHASH){cb(_AHASH);return;}
-  fetch('/admin-config.json?_='+Date.now())
-    .then(function(r){return r.ok?r.json():Promise.reject('not found');})
-    .then(function(d){_AHASH=d.h||'';cb(_AHASH);})
-    .catch(function(){cb('');});
-}
 
 function checkAdminPw(input,cb){
   var lockKey='sbso_lock';
@@ -1636,29 +1626,40 @@ function checkAdminPw(input,cb){
     document.getElementById('adminErr').style.display='block';
     cb(false);return;
   }
-  loadAdminHash(function(hash){
-    if(hash&&btoa(encodeURIComponent(input))===hash){
+  fetch('/admin-auth.php',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({password:input})
+  })
+  .then(function(r){
+    if(r.ok){
       sessionStorage.setItem(lockKey,JSON.stringify({attempts:0,until:0}));
-      cb(true);return;
-    }
-    lock.attempts=(lock.attempts||0)+1;
-    if(lock.attempts>=MAX_ATTEMPTS){
-      lock.until=Date.now()+LOCKOUT_MS;lock.attempts=0;
-      document.getElementById('adminErr').textContent='Too many failed attempts. Locked for 15 minutes.';
+      cb(true);
     }else{
-      var left=MAX_ATTEMPTS-lock.attempts;
-      document.getElementById('adminErr').textContent='Incorrect password. '+left+' attempt'+(left>1?'s':'')+' remaining.';
+      lock.attempts=(lock.attempts||0)+1;
+      if(lock.attempts>=MAX_ATTEMPTS){
+        lock.until=Date.now()+LOCKOUT_MS;lock.attempts=0;
+        document.getElementById('adminErr').textContent='Too many failed attempts. Locked for 15 minutes.';
+      }else{
+        var left=MAX_ATTEMPTS-lock.attempts;
+        document.getElementById('adminErr').textContent='Incorrect password. '+left+' attempt'+(left>1?'s':'')+' remaining.';
+      }
+      document.getElementById('adminErr').style.display='block';
+      sessionStorage.setItem(lockKey,JSON.stringify(lock));
+      cb(false);
     }
+  })
+  .catch(function(){
+    document.getElementById('adminErr').textContent='Could not reach auth server. Check admin-auth.php is uploaded.';
     document.getElementById('adminErr').style.display='block';
-    sessionStorage.setItem(lockKey,JSON.stringify(lock));
     cb(false);
   });
 }
 
 var defaultPosts=[
-  {id:'p1',cat:'Productivity',title:'The Real Cost of Managing Your Own Inbox',summary:'It is not just the time. It is the mental weight of knowing it is always there. Here is what changes when you hand it off properly.',body:"Managing your own inbox feels like a small task until you count the hours. Most business owners spend 2-4 hours per day on email, up to 20 hours a week consumed by one communication channel.\n\nThe real cost is not just time. It is the context switching. Every time you pull away from a client proposal to answer a routine email, you lose momentum. Research shows it takes an average of 23 minutes to fully regain focus after an interruption.\n\n### What Actually Changes When You Hand It Off\n\nWhen a trained inbox manager takes over, the first thing clients notice is mental clarity. You stop carrying the low-level awareness of a growing unread count. You stop starting every morning in reactive mode.\n\nYour inbox manager learns your voice, your standards, and your priorities in the first week. From there, most routine communication, follow-ups, enquiries, scheduling, vendor replies, never needs to reach you at all.\n\n### The Compounding Effect\n\nThe longer someone manages your inbox, the better they get. They learn which contacts matter, which can wait, and which need escalating. Over time, this becomes one of the highest-leverage decisions a growing business owner can make.",date:'April 2026'},
-  {id:'p2',cat:'Tech',title:"Why Most SaaS Support Reps Make Your Dev Team's Job Harder",summary:'Copy-pasting apologies and forwarding tickets is not support. It is delay. Here is what good technical support actually looks like.',body:"The typical SaaS support workflow: a user reports a problem, the support rep pastes it into a Slack channel tagged dev, the developer tries to make sense of it, asks for more info, and the cycle repeats for two or three days.\n\nThis is not a developer problem. It is a support problem.\n\n### What a Good Bug Report Actually Looks Like\n\nBefore escalating, a technically capable support rep should answer: what did the user do, what did they expect, what happened instead, can it be reproduced, and what does the account state look like in the admin panel?\n\n### The Technical Support Difference\n\nWith access to tools like Retool, Stripe, and RevenueCat, a technically trained specialist can investigate the account directly, checking subscription state, payment history, and error logs, before the developer ever sees the ticket.\n\nThis single change can reduce engineering time spent on support by 60 percent or more.",date:'April 2026'},
-  {id:'p3',cat:'Operations',title:'7 Tasks to Delegate This Week to Reclaim Your Mornings',summary:'Here is the right order to hand off inbox, social, CRM, scheduling, data entry, documents, and support tickets.',body:"Most business owners know they should delegate more. The problem is not motivation, it is knowing where to start without losing control of important work.\n\n### 1. Inbox Management\n\nStart here. Nothing else creates as much mental load. Even if your assistant only handles routine replies and flagging, you will immediately notice a difference in how your mornings feel.\n\n### 2. Social Media Scheduling\n\nContent creation can come later. Start by handing off the scheduling and posting of content you have already approved.\n\n### 3. CRM Updates\n\nContact records, deal stages, follow-up notes, these are pure data entry tasks.\n\n### 4. Calendar Management\n\nLet someone else handle the back-and-forth of scheduling meetings.\n\n### 5. Data Entry and Research\n\nLead lists, competitor research, market data, time-consuming but do not require senior judgment.\n\n### 6. Document and Slide Formatting\n\nGive your VA the content and have them handle the formatting.\n\n### 7. Support Ticket Triage\n\nIf you are a founder still answering your own support queue, this is the highest-leverage delegation you can make.",date:'April 2026'}
+  {id:'p1',cat:'Productivity',title:'The Real Cost of Managing Your Own Inbox',summary:'It is not just the time. It is the mental weight of knowing it is always there. Here is what changes when you hand it off properly.',body:"Managing your own inbox feels like a small task until you count the hours. Most business owners spend 2-4 hours per day on email, up to 20 hours a week consumed by one communication channel.\n\nThe real cost is not just time. It is the context switching. Every time you pull away from a client proposal to answer a routine email, you lose momentum. Research shows it takes an average of 23 minutes to fully regain focus after an interruption.\n\n### What Actually Changes When You Hand It Off\n\nWhen a trained inbox manager takes over, the first thing clients notice is mental clarity. You stop carrying the low-level awareness of a growing unread count. You stop starting every morning in reactive mode.\n\nYour inbox manager learns your voice, your standards, and your priorities in the first week. From there, most routine communication, follow-ups, enquiries, scheduling, vendor replies, never needs to reach you at all.\n\n### The Compounding Effect\n\nThe longer someone manages your inbox, the better they get. They learn which contacts matter, which can wait, and which need escalating. Over time, this becomes one of the highest-leverage decisions a growing business owner can make.",date:'April 2026',img:'blogimage1.png'},
+  {id:'p2',cat:'Tech',title:"Why Most SaaS Support Reps Make Your Dev Team's Job Harder",summary:'Copy-pasting apologies and forwarding tickets is not support. It is delay. Here is what good technical support actually looks like.',body:"The typical SaaS support workflow: a user reports a problem, the support rep pastes it into a Slack channel tagged dev, the developer tries to make sense of it, asks for more info, and the cycle repeats for two or three days.\n\nThis is not a developer problem. It is a support problem.\n\n### What a Good Bug Report Actually Looks Like\n\nBefore escalating, a technically capable support rep should answer: what did the user do, what did they expect, what happened instead, can it be reproduced, and what does the account state look like in the admin panel?\n\n### The Technical Support Difference\n\nWith access to tools like Retool, Stripe, and RevenueCat, a technically trained specialist can investigate the account directly, checking subscription state, payment history, and error logs, before the developer ever sees the ticket.\n\nThis single change can reduce engineering time spent on support by 60 percent or more.",date:'April 2026',img:'blogimage2.png'},
+  {id:'p3',cat:'Operations',title:'7 Tasks to Delegate This Week to Reclaim Your Mornings',summary:'Here is the right order to hand off inbox, social, CRM, scheduling, data entry, documents, and support tickets.',body:"Most business owners know they should delegate more. The problem is not motivation, it is knowing where to start without losing control of important work.\n\n### 1. Inbox Management\n\nStart here. Nothing else creates as much mental load. Even if your assistant only handles routine replies and flagging, you will immediately notice a difference in how your mornings feel.\n\n### 2. Social Media Scheduling\n\nContent creation can come later. Start by handing off the scheduling and posting of content you have already approved.\n\n### 3. CRM Updates\n\nContact records, deal stages, follow-up notes, these are pure data entry tasks.\n\n### 4. Calendar Management\n\nLet someone else handle the back-and-forth of scheduling meetings.\n\n### 5. Data Entry and Research\n\nLead lists, competitor research, market data, time-consuming but do not require senior judgment.\n\n### 6. Document and Slide Formatting\n\nGive your VA the content and have them handle the formatting.\n\n### 7. Support Ticket Triage\n\nIf you are a founder still answering your own support queue, this is the highest-leverage delegation you can make.",date:'April 2026',img:'blogimage3.png'}
 ];
 
 var blogEmoji=['📧','🔧','⏰','📊','💡','🚀','📝','🎯'];
@@ -1679,10 +1680,13 @@ function renderBlog(){
   }
   g.innerHTML=posts.map(function(p,i){
     var imgHtml;
+    var emoji=blogEmoji[i%blogEmoji.length];
     if(p.img){
-      imgHtml='<div class="blog-img blog-img-photo"><img src="'+p.img+'" alt="'+p.title+'" loading="lazy" onerror="this.parentNode.innerHTML=\''+blogEmoji[i%blogEmoji.length]+'\'"></div>';
+      /* Use path as-is if it has a slash, otherwise assume root */
+      var src=(p.img.indexOf('/')===-1)?('/'+p.img):p.img;
+      imgHtml='<div class="blog-img blog-img-photo" data-fallback="'+emoji+'"><img src="'+src+'" alt="'+p.title+'" loading="lazy" onerror="var d=this.parentNode;d.classList.remove(\'blog-img-photo\');d.innerHTML=d.dataset.fallback;"></div>';
     }else{
-      imgHtml='<div class="blog-img">'+blogEmoji[i%blogEmoji.length]+'</div>';
+      imgHtml='<div class="blog-img">'+emoji+'</div>';
     }
     return '<div class="blog-card" onclick="openPost(\''+p.id+'\')">'+imgHtml+'<div class="blog-body"><p class="blog-cat">'+p.cat+'</p><h3>'+p.title+'</h3><p>'+p.summary+'</p><span class="btn-ghost">Read more <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div></div>';
   }).join('');
