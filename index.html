@@ -1664,48 +1664,64 @@ var defaultPosts=[
 
 var blogEmoji=['📧','🔧','⏰','📊','💡','🚀','📝','🎯'];
 
-function loadPosts(){
-  try{var s=localStorage.getItem(BKEY);return s?JSON.parse(s):defaultPosts;}
-  catch(e){return defaultPosts;}
+function loadPosts(cb){
+  fetch('/blog-api.php?_='+Date.now())
+    .then(function(r){return r.ok?r.json():Promise.reject();})
+    .then(function(posts){
+      cb(posts&&posts.length?posts:defaultPosts);
+    })
+    .catch(function(){cb(defaultPosts);});
 }
-function savePosts(p){try{localStorage.setItem(BKEY,JSON.stringify(p));}catch(e){}}
+
+function savePosts(posts,cb){
+  var pw=sessionStorage.getItem('sbso_adminpw')||'';
+  fetch('/blog-api.php',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({password:pw,posts:posts})
+  })
+  .then(function(r){if(cb)cb(r.ok);})
+  .catch(function(){if(cb)cb(false);});
+}
 
 function renderBlog(){
-  var posts=loadPosts();
   var g=document.getElementById('blogGrid');
   if(!g)return;
-  if(!posts.length){
-    g.innerHTML='<p style="color:var(--muted);font-size:.9rem;grid-column:1/-1;text-align:center">No posts yet. Check back soon.</p>';
-    return;
-  }
-  g.innerHTML=posts.map(function(p,i){
-    var imgHtml;
-    var emoji=blogEmoji[i%blogEmoji.length];
-    if(p.img){
-      /* Use path as-is if it has a slash, otherwise assume root */
-      var src=(p.img.indexOf('/')===-1)?('/'+p.img):p.img;
-      imgHtml='<div class="blog-img blog-img-photo" data-fallback="'+emoji+'"><img src="'+src+'" alt="'+p.title+'" loading="lazy" onerror="var d=this.parentNode;d.classList.remove(\'blog-img-photo\');d.innerHTML=d.dataset.fallback;"></div>';
-    }else{
-      imgHtml='<div class="blog-img">'+emoji+'</div>';
+  g.innerHTML='<p style="color:var(--muted);font-size:.9rem;grid-column:1/-1;text-align:center">Loading...</p>';
+  loadPosts(function(posts){
+    if(!posts.length){
+      g.innerHTML='<p style="color:var(--muted);font-size:.9rem;grid-column:1/-1;text-align:center">No posts yet. Check back soon.</p>';
+      return;
     }
-    return '<div class="blog-card" onclick="openPost(\''+p.id+'\')">'+imgHtml+'<div class="blog-body"><p class="blog-cat">'+p.cat+'</p><h3>'+p.title+'</h3><p>'+p.summary+'</p><span class="btn-ghost">Read more <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div></div>';
-  }).join('');
+    g.innerHTML=posts.map(function(p,i){
+      var imgHtml;
+      var emoji=blogEmoji[i%blogEmoji.length];
+      if(p.img){
+        var src=(p.img.indexOf('/')===-1)?('/'+p.img):p.img;
+        imgHtml='<div class="blog-img blog-img-photo" data-fallback="'+emoji+'"><img src="'+src+'" alt="'+p.title+'" loading="lazy" onerror="var d=this.parentNode;d.classList.remove(\'blog-img-photo\');d.innerHTML=d.dataset.fallback;"></div>';
+      }else{
+        imgHtml='<div class="blog-img">'+emoji+'</div>';
+      }
+      return '<div class="blog-card" onclick="openPost(\''+p.id+'\')">'+imgHtml+'<div class="blog-body"><p class="blog-cat">'+p.cat+'</p><h3>'+p.title+'</h3><p>'+p.summary+'</p><span class="btn-ghost">Read more <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div></div>';
+    }).join('');
+  });
 }
 
 function openPost(id){
-  var posts=loadPosts();
-  var p=posts.find(function(x){return x.id===id});
-  if(!p)return;
-  document.getElementById('mCat').textContent=p.cat;
-  document.getElementById('mTitle').textContent=p.title;
-  document.getElementById('mDate').textContent=p.date||'';
-  var body=p.body.split('\n\n').map(function(block){
-    if(block.startsWith('### '))return'<h3>'+block.slice(4)+'</h3>';
-    return'<p>'+block+'</p>';
-  }).join('');
-  document.getElementById('mBody').innerHTML=body;
-  document.getElementById('blogModal').classList.add('open');
-  document.body.style.overflow='hidden';
+  loadPosts(function(posts){
+    var p=posts.find(function(x){return x.id===id});
+    if(!p)return;
+    document.getElementById('mCat').textContent=p.cat;
+    document.getElementById('mTitle').textContent=p.title;
+    document.getElementById('mDate').textContent=p.date||'';
+    var body=p.body.split('\n\n').map(function(block){
+      if(block.startsWith('### '))return'<h3>'+block.slice(4)+'</h3>';
+      return'<p>'+block+'</p>';
+    }).join('');
+    document.getElementById('mBody').innerHTML=body;
+    document.getElementById('blogModal').classList.add('open');
+    document.body.style.overflow='hidden';
+  });
 }
 
 function closeBlogModal(e){
@@ -1738,6 +1754,7 @@ function checkPw(){
   checkAdminPw(val,function(ok){
     if(ok){
       adminOk=true;
+      sessionStorage.setItem('sbso_adminpw',val);
       document.getElementById('adminLogin').style.display='none';
       document.getElementById('adminEditor').style.display='block';
       renderAdminList();
@@ -1745,48 +1762,71 @@ function checkPw(){
   });
 }
 function renderAdminList(){
-  var posts=loadPosts();
   var list=document.getElementById('adminList');
-  if(!posts.length){list.innerHTML='<p style="font-size:.82rem;color:var(--muted)">No posts yet.</p>';return;}
-  list.innerHTML=posts.map(function(p){
-    return'<div class="admin-post-item"><p>'+p.title+'</p><div class="admin-post-actions"><button onclick="editPost(\''+p.id+'\')">Edit</button><button class="del-btn" onclick="deletePost(\''+p.id+'\')">Delete</button></div></div>';
-  }).join('');
+  list.innerHTML='<p style="font-size:.82rem;color:var(--muted)">Loading...</p>';
+  loadPosts(function(posts){
+    if(!posts.length){list.innerHTML='<p style="font-size:.82rem;color:var(--muted)">No posts yet.</p>';return;}
+    list.innerHTML=posts.map(function(p){
+      return'<div class="admin-post-item"><p>'+p.title+'</p><div class="admin-post-actions"><button onclick="editPost(\''+p.id+'\')">Edit</button><button class="del-btn" onclick="deletePost(\''+p.id+'\')">Delete</button></div></div>';
+    }).join('');
+  });
 }
 function savePost(){
   if(!adminOk)return;
-  var posts=loadPosts();
   var title=document.getElementById('pTitle').value.trim();
   var summary=document.getElementById('pSummary').value.trim();
   var body=document.getElementById('pBody').value.trim();
   var cat=document.getElementById('pCat').value;
   var img=document.getElementById('pImg').value.trim();
   if(!title||!summary||!body){var m=document.getElementById('saveMsg');m.textContent='Please fill in all fields.';m.style.color='#CC2200';m.style.display='block';return;}
-  if(editId){
-    posts=posts.map(function(p){return p.id===editId?{id:p.id,cat:cat,title:title,summary:summary,body:body,date:p.date,img:img||p.img||''}:p});
-  }else{
-    posts.push({id:'p'+(Date.now()),cat:cat,title:title,summary:summary,body:body,date:'May 2026',img:img});
-  }
-  savePosts(posts);renderBlog();resetEditor();
-  var m=document.getElementById('saveMsg');m.textContent=editId?'Post updated.':'Post published.';m.style.color='#00875A';m.style.display='block';
-  setTimeout(function(){m.style.display='none';},2500);
-  editId=null;renderAdminList();
+  var m=document.getElementById('saveMsg');
+  m.textContent='Saving...';m.style.color='var(--muted)';m.style.display='block';
+  var isEdit=!!editId;
+  var capturedEditId=editId;
+  loadPosts(function(posts){
+    var updated;
+    if(isEdit){
+      updated=posts.map(function(p){return p.id===capturedEditId?{id:p.id,cat:cat,title:title,summary:summary,body:body,date:p.date,img:img||p.img||''}:p});
+    }else{
+      var now=new Date();
+      var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+      var dateStr=months[now.getMonth()]+' '+now.getFullYear();
+      updated=posts.slice();
+      updated.push({id:'p'+(Date.now()),cat:cat,title:title,summary:summary,body:body,date:dateStr,img:img});
+    }
+    savePosts(updated,function(ok){
+      if(ok){
+        m.textContent=isEdit?'Post updated.':'Post published.';m.style.color='#00875A';
+        renderBlog();resetEditor();renderAdminList();
+        editId=null;
+      }else{
+        m.textContent='Save failed. Check blog-api.php is uploaded.';m.style.color='#CC2200';
+      }
+      setTimeout(function(){m.style.display='none';},3000);
+    });
+  });
 }
 function editPost(id){
-  var posts=loadPosts();
-  var p=posts.find(function(x){return x.id===id});
-  if(!p)return;
-  editId=id;
-  document.getElementById('editorTitle').textContent='Edit Post';
-  document.getElementById('pCat').value=p.cat;
-  document.getElementById('pTitle').value=p.title;
-  document.getElementById('pImg').value=p.img||'';
-  document.getElementById('pSummary').value=p.summary;
-  document.getElementById('pBody').value=p.body;
+  loadPosts(function(posts){
+    var p=posts.find(function(x){return x.id===id});
+    if(!p)return;
+    editId=id;
+    document.getElementById('editorTitle').textContent='Edit Post';
+    document.getElementById('pCat').value=p.cat;
+    document.getElementById('pTitle').value=p.title;
+    document.getElementById('pImg').value=p.img||'';
+    document.getElementById('pSummary').value=p.summary;
+    document.getElementById('pBody').value=p.body;
+  });
 }
 function deletePost(id){
   if(!confirm('Delete this post?'))return;
-  var posts=loadPosts().filter(function(p){return p.id!==id});
-  savePosts(posts);renderBlog();renderAdminList();
+  loadPosts(function(posts){
+    var updated=posts.filter(function(p){return p.id!==id});
+    savePosts(updated,function(ok){
+      renderBlog();renderAdminList();
+    });
+  });
 }
 function resetEditor(){
   editId=null;
